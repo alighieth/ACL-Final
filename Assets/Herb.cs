@@ -2,20 +2,20 @@ using System;
 using System.Collections.Generic;
 public class Herb : Item
 {
+    private Dictionary<string, string> itemTypes = (Dictionary<string, string>) Inventory.getItemTypes();
     public Herb(string type): base(type)
     {
-        switch (type) {
-            case Inventory.itemTypes.GetValueOrDefault("GreenHerb"):
-                buyPrice = 20;
-                sellPrice = 15;
-                break;
-            case Inventory.itemTypes.GetValueOrDefault("RedHerb"):
-                buyPrice = 40;
-                sellPrice = 25;
-                break;
-            default:
-                break;
+        string GreenHerb = this.itemTypes.GetValueOrDefault("GreenHerb");
+        if(type == GreenHerb)
+        {
+            this.buyPrice = 20;
+            this.sellPrice = 15;
+        } else if (type == this.itemTypes.GetValueOrDefault("RedHerb", " "))
+        {
+            this.buyPrice = 40;
+            this.sellPrice = 25;
         }
+        
     }
 
     

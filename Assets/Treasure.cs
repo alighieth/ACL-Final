@@ -2,21 +2,22 @@ using System;
 using System.Collections.Generic;
 public class Treasure : Item
 {
+    private Dictionary<string, string> itemTypes = (Dictionary<string, string>)Inventory.getItemTypes();
+
     public Treasure(string type): base(type)
     {
-        switch (type)
+
+        if (type == itemTypes.GetValueOrDefault("GoldBar"))
         {
-            case Inventory.itemTypes.GetValueOrDefault("GoldBar"):
-                sellPrice = 100;
-                break;
-            case Inventory.itemTypes.GetValueOrDefault("Ruby"):
-                sellPrice = 200;
-                break;
-            case Inventory.itemTypes.GetValueOrDefault("Emerald"):
-                sellPrice = 300;
-                break;
-            default:
-                break;
+            this.sellPrice = 100;
+        }
+        else if (type == itemTypes.GetValueOrDefault("Ruby"))
+        {
+            this.sellPrice = 200;
+        }
+        else if (type == itemTypes.GetValueOrDefault("Emerald"))
+        {
+            this.sellPrice = 300;
         }
     }
     

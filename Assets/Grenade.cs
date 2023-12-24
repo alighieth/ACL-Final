@@ -2,21 +2,21 @@ using System;
 using System.Collections.Generic;
 public class Grenade : Item
 {
+    private Dictionary<string, string> itemTypes = (Dictionary<string, string>)Inventory.getItemTypes();
+
     public Grenade(string type): base(type)
     {
-        switch (type)
+        if (type == itemTypes.GetValueOrDefault("Hand_Grenade"))
         {
-            case Inventory.itemTypes.GetValueOrDefault("Hand_Grenade"):
-                buyPrice = 15;
-                sellPrice = 10;
-                break;
-            case Inventory.itemTypes.GetValueOrDefault("Flash_Grenade"):
-                buyPrice = 15;
-                sellPrice = 10;
-                break;
-            default:
-                break;
+            this.buyPrice = 15;
+            this.sellPrice = 10;
         }
+        else if (type == itemTypes.GetValueOrDefault("Flash_Grenade"))
+        {
+            this.buyPrice = 15;
+            this.sellPrice = 10;
+        }
+        
     }
     
 }

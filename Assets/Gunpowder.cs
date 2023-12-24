@@ -2,20 +2,19 @@ using System;
 using System.Collections.Generic;
 public class Gunpowder : Item
 {
+    private Dictionary<string, string> itemTypes = (Dictionary<string, string>)Inventory.getItemTypes();
+
     public Gunpowder(string type): base(type)
-    { 
-        switch (type)
+    {
+        if (type == itemTypes.GetValueOrDefault("Normal_Gunpowder"))
         {
-            case Inventory.itemTypes.GetValueOrDefault("Normal_Gunpowder"):
-                buyPrice = 10;
-                sellPrice = 5;
-                break;
-            case Inventory.itemTypes.GetValueOrDefault("High_Grade_Gunpowder"):
-                buyPrice = 20;
-                sellPrice = 15;
-                break;
-            default:
-                break;
+            this.buyPrice = 10;
+            this.sellPrice = 5;
+        }
+        else if (type == this.itemTypes.GetValueOrDefault("High_Grade_Gunpowder"))
+        {
+            this.buyPrice = 20;
+            this.sellPrice = 15;
         }
     }
     

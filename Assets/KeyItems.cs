@@ -5,10 +5,7 @@ public class KeyItems : Item
 
     public KeyItems(string type): base(type)
     {
-        switch (type)
-        {
-            
-        }
+        
     }
     // private static KeyItems instance;
 

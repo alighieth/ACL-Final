@@ -21,18 +21,31 @@ public class Store
         }
     }
 
-    public void buyItem(Item item, Player player) {
-        if (player.gold < item.buyPrice || player.inventory.isFull())  
+    public void buyItem(Item item) {
+        Inventory playerInventory = Inventory.Instance;
+        if(Ammo.isAmmo(item.type))
+        {
+            playerInventory.stackAmmo(item);
+            return;
+        }
+
+        if (playerInventory.gold < item.buyPrice || playerInventory.isFull() || playerInventory.containsItem(item.type) < 0)  
         {
             return;
         }
-        player.gold -= item.buyPrice;
-        player.inventory.AddItemToInventory(item);
+
+        playerInventory.gold -= item.buyPrice;
+        playerInventory.AddItemToInventory(item);
     }
 
     
-    public void sellItem(Item item, Player player) {
-        player.gold += item.sellPrice;
-        player.inventory.RemoveItemFromInventory(item);
+    public void sellItem(Item item) {
+        Inventory playerInventory = Inventory.Instance;
+        if(playerInventory.containsItem(item.type) < 0)
+        {
+            return;
+        }
+        playerInventory.gold += item.sellPrice;
+        playerInventory.RemoveItemFromInventory(item);
     }
 }
