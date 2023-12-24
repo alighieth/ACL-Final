@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 
+
 public class Inventory : MonoBehaviour
 {
     // UI Elements
@@ -36,8 +37,73 @@ public class Inventory : MonoBehaviour
     private Item equippedGrenade;
     private Item selectedItem;
     private Item selectedItem2;
+    private Dictionary<string, string> itemTypes = (Dictionary<string, string>)Inventory.getItemTypes();
 
-    public Dictionary<string, string> itemTypes = new Dictionary<string, string>
+    // Inventory Resources
+    public int gold = 30;
+
+
+    // singleton
+    private static Inventory instance;
+    public static Inventory Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new Inventory();
+            }
+            return instance;
+        }
+    }
+
+    void Start()
+    {
+        
+        Ammo pistolAmmo = new Ammo(this.itemTypes.GetValueOrDefault("Pistol_Ammo"), startingPistolAmmo);
+        AddItemToInventory(new Weapon(this.itemTypes.GetValueOrDefault("Pistol"), pistolAmmo));
+        AddItemToInventory(pistolAmmo);
+        AddItemToInventory(new Herb(this.itemTypes.GetValueOrDefault("GreenHerb")));
+
+        
+        equipButton.onClick.AddListener(EquipSelectedItem);
+        useButton.onClick.AddListener(UseSelectedItem);
+        discardButton.onClick.AddListener(DiscardSelectedItem);
+        
+        UpdateUI();
+    }
+
+    
+    private void UpdateUI()
+    {
+        // healthText.text = "Health: " + healthPoints;
+        // stasisText.text = "Stasis: " + stasisPoints;
+        // goldText.text = "Gold: " + goldCoins;
+        // knifeDurabilityText.text = "Knife Durability: " + knifeDurability;
+
+        // equippedWeaponText.text = "Equipped Weapon: " + (equippedWeapon != null ? equippedWeapon.name : "None");
+        // equippedGrenadeText.text = "Equipped Grenade: " + (equippedGrenade != null ? equippedGrenade.name : "None");
+
+        // if (selectedItem != null)
+        // {
+        //     selectedItemText.text = "Selected Item: " + selectedItem.name;
+
+        //     equipButton.interactable = selectedItem is Weapon || selectedItem is Grenade;
+        //     useButton.interactable = selectedItem is Herb;
+        //     discardButton.interactable = !(selectedItem is Weapon) && !(selectedItem is KeyItem);
+        // }
+        // else
+        // {
+        //     selectedItemText.text = "Selected Item: None";
+        //     equipButton.interactable = false;
+        //     useButton.interactable = false;
+        //     discardButton.interactable = false;
+        // }
+    }
+
+    public static Dictionary<string, string> getItemTypes()
+    {
+        return new Dictionary<string, string>
         {
             {"Emblem", "Emblem"},
             {"Key_Card", "Key Card"},
@@ -70,65 +136,38 @@ public class Inventory : MonoBehaviour
             {"Short", "Short"},
             {"Long", "Long"},
         };
+    }
 
-    // singleton
-    private static Inventory instance;
-    public static Inventory Instance
+    public int containsItem(string itemName)
     {
-        get
+        for(int i = 0; i < this.inventory.Length; i++)
         {
-            if (instance == null)
+            Item itemInventory = this.inventory[i];
+            if (itemInventory.type == itemName)
             {
-                instance = new Inventory();
+                return i;
             }
-            return instance;
         }
+
+        return -1;
     }
 
-    void Start()
+    public void stackAmmo(Item item)
     {
-        
-        Ammo pistolAmmo = new Ammo(itemTypes.GetValueOrDefault("Pistol_Ammo"), startingPistolAmmo);
-        AddItemToInventory(new Weapon(itemTypes.GetValueOrDefault("Pistol"), pistolAmmo));
-        AddItemToInventory(pistolAmmo);
-        AddItemToInventory(new Herb(itemTypes.GetValueOrDefault("GreenHerb")));
+        if (!Ammo.isAmmo(item.type)) return;
+        Ammo inputAmmo = (Ammo)item;
+        int itemIndex = containsItem(item.type);
+        if (itemIndex < 0)
+        {
+            if (isFull()) return;
+            AddItemToInventory(item);
+        } else
+        {
+            Ammo ammoStack = (Ammo)this.inventory[itemIndex];
+            ammoStack.ammoAmount += inputAmmo.ammoAmount;
+        }
 
-        
-        equipButton.onClick.AddListener(EquipSelectedItem);
-        useButton.onClick.AddListener(UseSelectedItem);
-        discardButton.onClick.AddListener(DiscardSelectedItem);
-        
-
-        
-        UpdateUI();
-    }
-
-    
-    private void UpdateUI()
-    {
-        // healthText.text = "Health: " + healthPoints;
-        // stasisText.text = "Stasis: " + stasisPoints;
-        // goldText.text = "Gold: " + goldCoins;
-        // knifeDurabilityText.text = "Knife Durability: " + knifeDurability;
-
-        // equippedWeaponText.text = "Equipped Weapon: " + (equippedWeapon != null ? equippedWeapon.name : "None");
-        // equippedGrenadeText.text = "Equipped Grenade: " + (equippedGrenade != null ? equippedGrenade.name : "None");
-
-        // if (selectedItem != null)
-        // {
-        //     selectedItemText.text = "Selected Item: " + selectedItem.name;
-
-        //     equipButton.interactable = selectedItem is Weapon || selectedItem is Grenade;
-        //     useButton.interactable = selectedItem is Herb;
-        //     discardButton.interactable = !(selectedItem is Weapon) && !(selectedItem is KeyItem);
-        // }
-        // else
-        // {
-        //     selectedItemText.text = "Selected Item: None";
-        //     equipButton.interactable = false;
-        //     useButton.interactable = false;
-        //     discardButton.interactable = false;
-        // }
+        this.gold -= item.buyPrice;
     }
 
     public void EquipSelectedItem()
@@ -252,6 +291,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
+   
     public void RemoveItemFromInventory(Item item)
     {
         if (item != null)
